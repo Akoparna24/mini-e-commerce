@@ -1,16 +1,15 @@
-from ecommerce.db_config import db
 from models.coupon_model import CouponsModel
+from extensions import db
 
 class CouponRepo:
-    def __init__(self, coupon_type, min_cart_value, max_discount, coupon_expiry, user_specific_flag,
-                      valid_product_categories, cart_size):
+    def __init__(self, coupon_type, coupon_desc, coupon_details, coupon_expiry, active, usage_limit, user_limit):
         self.coupon_type = coupon_type
-        self.min_cart_value = min_cart_value
-        self.max_discount = max_discount
+        self.coupon_desc = coupon_desc
+        self.coupon_details = coupon_details
         self.coupon_expiry = coupon_expiry
-        self.user_specific_flag = user_specific_flag
-        self.valid_product_categories = valid_product_categories
-        self.cart_size = cart_size
+        self.active = active
+        self.usage_limit = usage_limit
+        self.user_limit = user_limit
 
     @classmethod
     def fetch_coupon(cls, coupon_id):
@@ -27,16 +26,15 @@ class CouponRepo:
         db.session.commit()
 
     @classmethod
-    def update_coupon(cls, coupon_id, coupon_type, min_cart_value, max_discount, coupon_expiry, user_specific_flag,
-                      valid_product_categories, cart_size):
+    def update_coupon(cls, coupon_id, coupon_type, coupon_desc, coupon_details, coupon_expiry, active, usage_limit, user_limit):
         query = CouponsModel.query.get(coupon_id)
         query.update({
             "coupon_type": coupon_type,
-            "min_cart_value": min_cart_value,
-            "max_discount": max_discount,
+            "coupon_desc": coupon_desc,
+            "coupon_details": coupon_details,
             "coupon_expiry": coupon_expiry,
-            "user_specific_flag": user_specific_flag,
-            "valid_product_categories": valid_product_categories,
-            "cart_size": cart_size
+            "active": active,
+            "usage_limit": usage_limit,
+            "user_limit": user_limit
         })
         db.session.commit()

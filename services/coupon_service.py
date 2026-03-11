@@ -11,15 +11,6 @@ class CouponService:
     @classmethod
     def create_coupon(cls, coupon_type, coupon_desc, coupon_details, coupon_expiry, active, usage_limit, user_limit):
         try:
-            # coupon_details = {
-            #     "coupon_type": coupon_type,
-            #     "coupon_desc": coupon_desc,
-            #     "coupon_details": coupon_details,
-            #     "coupon_expiry": coupon_expiry,
-            #     "active": active,
-            #     "usage_limit": usage_limit,
-            #     "user_limit": user_limit
-            # }
             coupon_details = CouponsModel(
                 coupon_type=coupon_type,
                 coupon_desc=coupon_desc,

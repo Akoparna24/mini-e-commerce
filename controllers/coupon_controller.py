@@ -1,6 +1,4 @@
 from flask import  Blueprint, request
-from scripts.regsetup import description
-
 from services.coupon_service import CouponService
 
 blp_coupons = Blueprint(
@@ -56,7 +54,7 @@ class CouponController:
         return CouponService.applicable_coupons(cart)
 
     @blp_coupons.post("/apply-coupon/<int:coupon_id>")
-    def applicable_coupons(coupon_id):
+    def apply_coupon(coupon_id):
         req = request.json
         cart = req["cart"]
         return CouponService.apply_coupon(coupon_id, cart)

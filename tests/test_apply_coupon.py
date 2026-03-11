@@ -8,17 +8,15 @@ def test_apply_coupon_success(client):
         }
     }
 
-    response = client.post(
-        "/apply-coupon/1",
-        json=cart
-    )
+    response = client.post("/api/apply-coupon/1", json=cart)
 
     assert response.status_code == 200
 
     data = response.get_json()
 
-    assert "updated_cart" in data
-    assert "final_price" in data["updated_cart"]
+    assert data["status"] is True
+    assert "updated_cart" in data["result"]
+    assert data["result"]["updated_cart"]["final_price"] == 180.0
 
 def test_coupon_not_applicable(client):
 
@@ -30,7 +28,7 @@ def test_coupon_not_applicable(client):
         }
     }
 
-    response = client.post("/apply-coupon/1", json=cart)
+    response = client.post("/api/apply-coupon/1", json=cart)
 
     assert response.status_code == 400
 
@@ -38,6 +36,6 @@ def test_apply_coupon_empty_cart(client):
 
     cart = {"cart": {"items": []}}
 
-    response = client.post("/apply-coupon/1", json=cart)
+    response = client.post("/api/apply-coupon/1", json=cart)
 
     assert response.status_code == 400

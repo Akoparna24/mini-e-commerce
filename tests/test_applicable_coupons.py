@@ -12,29 +12,32 @@ def test_applicable_coupons_success(client):
     }
 
     response = client.post(
-        "/applicable-coupons",
-        data=json.dumps(cart),
-        content_type="application/json"
+        "/api/applicable-coupons",
+        json=cart
     )
 
     assert response.status_code == 200
 
     data = response.get_json()
 
-    assert "applicable_coupons" in data
-    assert isinstance(data["applicable_coupons"], list)
+    assert data["status"] is True
+    assert isinstance(data["result"], list)
 
 def test_applicable_coupons_empty_cart(client):
 
     cart = {"cart": {"items": []}}
 
     response = client.post(
-        "/applicable-coupons",
+        "/api/applicable-coupons",
         json=cart
     )
 
     assert response.status_code == 200
-    assert response.get_json()["applicable_coupons"] == []
+
+    data = response.get_json()
+
+    assert data["status"] is True
+    assert data["result"] == []
 
 def test_no_coupon_applicable(client):
 
@@ -46,8 +49,9 @@ def test_no_coupon_applicable(client):
         }
     }
 
-    response = client.post("/applicable-coupons", json=cart)
+    response = client.post("/api/applicable-coupons", json=cart)
 
     data = response.get_json()
 
-    assert data["applicable_coupons"] == []
+    assert data["status"] is True
+    assert data["result"] == []

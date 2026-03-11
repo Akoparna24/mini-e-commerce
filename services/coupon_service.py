@@ -4,27 +4,38 @@ from flask import jsonify, make_response
 from extensions import db
 from repositories.coupon_repository import CouponRepo
 from constants import BXGY, CART_WISE, PRODUCT_WISE
+from models.coupon_model import CouponsModel
 
 class CouponService:
 
     @classmethod
     def create_coupon(cls, coupon_type, coupon_desc, coupon_details, coupon_expiry, active, usage_limit, user_limit):
         try:
-            coupon_details = {
-                "coupon_type": coupon_type,
-                "coupon_desc": coupon_desc,
-                "coupon_details": coupon_details,
-                "coupon_expiry": coupon_expiry,
-                "active": active,
-                "usage_limit": usage_limit,
-                "user_limit": user_limit
-            }
+            # coupon_details = {
+            #     "coupon_type": coupon_type,
+            #     "coupon_desc": coupon_desc,
+            #     "coupon_details": coupon_details,
+            #     "coupon_expiry": coupon_expiry,
+            #     "active": active,
+            #     "usage_limit": usage_limit,
+            #     "user_limit": user_limit
+            # }
+            coupon_details = CouponsModel(
+                coupon_type=coupon_type,
+                coupon_desc=coupon_desc,
+                coupon_details=coupon_details,
+                coupon_expiry=coupon_expiry,
+                active=active,
+                usage_limit=usage_limit,
+                user_limit=user_limit
+            )
             db.session.add(coupon_details)
             db.session.commit()
 
             return make_response(jsonify(message="Coupon created successfully", status=True), 200)
 
         except Exception as e:
+            print(f"Exception: {e}")
             db.session.rollback()
             return make_response(jsonify(message="Coupon not created", status=False), 500)
 
@@ -76,6 +87,7 @@ class CouponService:
             return make_response(jsonify(message="Coupon deleted successfully", status=True), 200)
 
         except Exception as e:
+            db.session.rollback()
             return make_response(jsonify(message="Coupon Not Deleted", status=False), 500)
 
     @classmethod
@@ -85,6 +97,8 @@ class CouponService:
             return make_response(jsonify(message="Coupon updated successfully", status=True), 200)
 
         except Exception as e:
+            print(f"Exception: {e}")
+            db.session.rollback()
             return make_response(jsonify(message="Coupon Not Updated", status=False), 500)
 
     @classmethod
@@ -176,7 +190,7 @@ class CouponService:
             return make_response(jsonify(result=applicable_coupons, status=True), 200)
 
         except Exception as e:
-            print("llll",e)
+            print(f"Exception: {e}")
             return make_response(jsonify(message="Cart not eligible for applying coupons", status=False), 500)
 
     @classmethod
@@ -184,19 +198,22 @@ class CouponService:
         try:
             items = cart.get("items", [])
 
+            if not cart or "cart" not in cart:
+                return jsonify({"status": False, "message": "Invalid cart"}), 400
+
             if not items:
-                return jsonify({"error": "Cart is empty"}), 400
+                return jsonify({"error": "Cart is empty"}), 500
 
             coupon = CouponRepo.fetch_coupon(coupon_id)
 
             if not coupon:
                 return jsonify({"error": "Coupon not found"}), 404
 
-            if coupon.expiry_date and coupon.expiry_date < datetime.utcnow():
-                return jsonify({"error": "Coupon expired"}), 400
+            if coupon.coupon_expiry and coupon.coupon_expiry < datetime.now():
+                return jsonify({"error": "Coupon expired"}), 500
 
-            details = coupon.details
-            coupon_type = coupon.type
+            details = coupon.coupon_details
+            coupon_type = coupon.coupon_type
 
             total_discount = 0
 
@@ -290,4 +307,5 @@ class CouponService:
             }, status=True),200)
 
         except Exception as e:
+            print(f"Exception: {e}")
             return make_response(jsonify(message="Could not apply coupon", status=False), 500)

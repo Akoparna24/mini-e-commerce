@@ -27,8 +27,7 @@ class CouponRepo:
 
     @classmethod
     def update_coupon(cls, coupon_id, coupon_type, coupon_desc, coupon_details, coupon_expiry, active, usage_limit, user_limit):
-        query = CouponsModel.query.get(coupon_id)
-        query.update({
+        query = CouponsModel.query.filter_by(coupon_id=coupon_id).update({
             "coupon_type": coupon_type,
             "coupon_desc": coupon_desc,
             "coupon_details": coupon_details,

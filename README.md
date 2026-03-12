@@ -26,6 +26,7 @@ master_coupon_details table
 | usage_limit | INT                | Total allowed uses                   |
 | user_limit  | INT                | Allowed uses per user                |
 | created_at  | TIMESTAMP          | Creation time                        |
+| updated_at  | TIMESTAMP          | Updation time                        |
 
 Example coupon structure:
 {
